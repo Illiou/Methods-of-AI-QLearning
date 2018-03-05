@@ -1,15 +1,24 @@
+"""
+This MDP class provides the environment for Q-learning.
+It's very similar to the MDP in first programming task, but stripped of everything except
+for the init function and it now has method that gives information about performing an action
+in a specific state.
+
+The initialization is mostly the same as in the QLearning class, but to keep
+Q-learning and environment independent this is somewhat necessary.
+"""
+
 import random
 
 
 class MDP:
-    def __init__(self, state_list, field_rewards, goal_fields, obstacle_fields, actions, transition_probabilities):
+    def __init__(self, state_list, field_rewards, obstacle_fields, actions, transition_probabilities):
         """
         Initializes an MDP with the following parameters.
         "Field" here refers to the letters or signs with which different states are represented.
 
         :param state_list: two-dimensional list of possible states represented as specific fields
         :param field_rewards: dictionary which maps fields in state_list to a reward value
-        :param goal_fields: list of fields which are considered terminal states
         :param obstacle_fields: list of fields which are considered obstacles
         :param actions: list of possible movements in tuple notation, i.e. (x_coordinate_offset, y_coordinate_offset)
         :param transition_probabilities: dictionary of transition probabilities,
@@ -19,8 +28,6 @@ class MDP:
         # list of reachable states in (x, y) coordinate tuple notation
         # obstacles are left out as they are not reachable by an agent
         self.states = []
-        # list of the states considered terminal states
-        self.goal_states = []
         # function implemented as dictionary which returns the immediate reward for the given state
         # as noted above it is only dependant on the state, not the action and therefore only called with the former
         self.rewards = {}
@@ -30,12 +37,6 @@ class MDP:
                 if field not in obstacle_fields:
                     self.states.append((x, y))
                     self.rewards[(x, y)] = field_rewards[field]
-                if field in goal_fields:
-                    self.goal_states.append((x, y))
-
-        # making sure goal_states is a subset of states as they are unreachable otherwise
-        if not set(self.goal_states).issubset(self.states):
-            raise Exception("Goal states cannot be obstacles")
 
         # save as instance variables
         self.actions = actions
@@ -50,8 +51,11 @@ class MDP:
         :return: tuple of immediate reward, follow-up state
         """
 
+        if s not in self.states:
+            raise Exception("Invalid state given.")
         if a not in self.actions:
             raise Exception("Invalid action given")
+
         # with probability (1 - probability of going straight) set action to random orthogonal action
         if random.random() >= self.transition_probabilities["straight"]:
             a = random.choice([(a[1], a[0]), (-a[1], -a[0])])
