@@ -1,3 +1,8 @@
+"""
+This class can be initialized with a gridworld and some parameters and
+is then able to find an optimal policy with Q-learning.
+"""
+
 import random
 
 
@@ -8,7 +13,7 @@ class QLearning:
         Sets up a representation of the gridworld given the following parameters.
         "Field" here refers to the letters or signs with which different states are represented.
 
-        :param env_perform_action: function of the environment which gives back (reward, follow-up state)
+        :param env_perform_action: function of the environment which gives back tuple (reward, follow-up state)
                                    given a state and an action
         :param state_list: two-dimensional list of possible states represented as specific fields
         :param goal_fields: list of fields which are considered terminal states
@@ -92,9 +97,11 @@ class QLearning:
         # perform action and observe reward and follow-up state from environment
         r, s_prime = self.env_perform_action(s, a)
         # perform q_function update
-        greedy_q = max(self.q_function[s_prime, a_prime] for a_prime in self.actions)
-        updated_q = self.q_function[s, a] + self.learning_rate * (
-                                r + self.discount_factor * greedy_q - self.q_function[s, a])
+        if s not in self.goal_states:
+            greedy_q = max(self.q_function[s_prime, a_prime] for a_prime in self.actions)
+        else:
+            greedy_q = 0  # if current state is a goal state future reward will always be 0
+        updated_q = self.q_function[s, a] + self.learning_rate * (r + self.discount_factor * greedy_q - self.q_function[s, a])
         self.q_function[s, a] = round(updated_q, self.decimal_places)
         # set new current state
         self.current_state = s_prime
