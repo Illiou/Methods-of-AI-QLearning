@@ -7,7 +7,6 @@ gridworld_list = Gridworld.make_list_from_file("3by4.grid")
 
 mdp = MDP(state_list=gridworld_list,
           field_rewards=Default.FIELD_REWARDS,
-          goal_fields=Default.GOAL_FIELDS,
           obstacle_fields=Default.OBSTACLE_FIELDS,
           actions=Default.ACTIONS,
           transition_probabilities=Default.TRANSITION_PROBABILITIES)
