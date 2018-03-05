@@ -1,6 +1,13 @@
 """
 This class can be initialized with a gridworld and some parameters and
 is then able to find an optimal policy with Q-learning.
+
+The assignment document talks about checking for convergence by comparing
+last episode's policy to the current one. If you stop as soon as the
+policy doesn't change in one episode you get pretty bad results, therefore
+we included a convergence threshold, which is the number of episodes
+in which the policy didn't change, after which the policy will be considered
+to have converged.
 """
 
 import random
